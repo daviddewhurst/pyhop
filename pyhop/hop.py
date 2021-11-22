@@ -97,26 +97,34 @@ Pyhop provides the following classes and functions:
 import copy
 import logging
 
-# from pyhop.helpers import (
-#     helpers.print_goal, print_methods, helpers.print_operators, helpers.print_state)
 from . import helpers
 
 
 ############################################################
 # States and goals
 
+
 class State:
-    """A state is just a collection of variable bindings."""
+    """
+    A state is just a collection of variable bindings.
+    """
+
     def __init__(self,name):
         self.__name__ = name
 
-    # def __repr__(self,):
-    #     return 
+    def __repr__(self,):
+        return f"State{helpers._dict_repr(self,)}"
 
 class Goal:
-    """A goal is just a collection of variable bindings."""
+    """
+    A goal is just a collection of variable bindings.
+    """
+
     def __init__(self,name):
         self.__name__ = name
+
+    def __repr__(self,):
+        return f"Goal{helpers._dict_repr(self,)}"
 
 ############################################################
 # Commands to tell Pyhop what the operators and methods are
@@ -171,47 +179,56 @@ def plan(
                 verbose, state.__name__, tasks)
         )
     result = seek_plan(state, tasks, operators, methods, [], 0, verbose)
-    if verbose>0: logging.info(f'** result = {result}\n')
+    if verbose > 0:
+        logging.info(f'** result = {result}\n')
     return result
 
 
 def search_operators(state,tasks,operators,methods,plan,task,depth,verbose):
-    if verbose>2:
+    if verbose > 2:
         logging.info('In search_operators: depth {}, action {}'.format(depth,task))
+
     operator = operators[task[0]]
     newstate = operator(copy.deepcopy(state),*task[1:])
+
     if verbose > 3:
         logging.info(
             f"Using operator {operator}, yields new state {newstate}"
         )
-    if verbose>2:
+
+    if verbose > 2:
         logging.info('depth {} new state:'.format(depth))
         helpers.print_state(newstate)
+
     if newstate:
         solution = seek_plan(
             newstate,tasks[1:],operators,methods,plan+[task],depth+1,verbose)
+
         if solution != False:
             return solution
 
 
 def search_methods(state,tasks,operators,methods,plan,task,depth,verbose):
-    if verbose>2:
+    if verbose > 2:
         logging.info('In search_methods, depth {}, method instance {}'.format(depth,task))
 
     relevant = methods[task[0]]
+
     for method in relevant:
         subtasks = method(state,*task[1:])
         if verbose > 3:
             logging.info(
                 f"Method = {method}, subtasks = {subtasks}"
             )
+        if verbose > 2:
+            logging.info('depth {} new tasks: {}'.format(depth,subtasks))
+
         # Can't just say "if subtasks:", because that's wrong if
         # subtasks == []
-        if verbose>2:
-            logging.info('depth {} new tasks: {}'.format(depth,subtasks))
         if subtasks != False:
             solution = seek_plan(
                 state,subtasks+tasks[1:],operators,methods,plan,depth+1,verbose)
+
             if solution != False:
                 return solution
 
@@ -229,12 +246,15 @@ def seek_plan(state,tasks,operators,methods,plan,depth,verbose=0):
         logging.info(f"tasks = {tasks}")
         logging.info(f"operators = {operators}")
         logging.info(f"methods = {methods}")
-    if verbose>1:
+
+    if verbose > 1:
         logging.info('depth {} tasks {}'.format(depth,tasks))
+
     if tasks == []:
-        if verbose>2:
+        if verbose > 2:
             logging.info('depth {} returns plan {}'.format(depth,plan))
         return plan
+
     task = tasks[0]
     if task[0] in operators:
         return search_operators(
@@ -258,6 +278,6 @@ def seek_plan(state,tasks,operators,methods,plan,depth,verbose=0):
             depth,
             verbose
         )
-    if verbose>2:
+    if verbose > 2:
         logging.info('depth {} returns failure'.format(depth))
     return False

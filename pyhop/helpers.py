@@ -1,11 +1,19 @@
 import sys
 
 
+def _dict_repr(obj,):
+    return {
+        x: getattr(obj, x)
+        for x in dir(obj) if not x.startswith('__')
+    }
+
+
 def forall(seq,cond):
     """True if cond(x) holds for all x in seq, otherwise False."""
     for x in seq:
         if not cond(x): return False
     return True
+
 
 def find_if(cond,seq):
     """
@@ -16,6 +24,7 @@ def find_if(cond,seq):
         if cond(x): return x
     return None
 
+
 def is_done(b1,state,goal, done_state):
     if b1 == done_state: return True
     if b1 in goal.pos and goal.pos[b1] != state.pos[b1]:
@@ -23,8 +32,10 @@ def is_done(b1,state,goal, done_state):
     if state.pos[b1] == done_state: return True
     return is_done(state.pos[b1],state,goal,done_state)
 
+
 def all(state):
     return state.clear.keys()
+
 
 def print_state(state,indent=4):
     """Print each variable in state, indented by indent spaces."""
@@ -36,11 +47,14 @@ def print_state(state,indent=4):
                 print(' =', val)
     else: print('False')
 
+
 print_goal = print_state
+
 
 def print_operators(olist):
     """Print out the names of the operators"""
     print('OPERATORS:', ', '.join(olist))
+
 
 def print_methods(mlist):
     """Print out a table of what the methods are for each task"""

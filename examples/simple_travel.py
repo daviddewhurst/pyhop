@@ -47,12 +47,14 @@ def give_money_to_driver(state, agent):
 
 
 def look_in_cushions(state, agent):
-    state.cash[agent] = state.cash[agent] + 2.0
+    state.time += 1
+    state.cash[agent] += 2.0
     return state
 
 
 def look_in_bushes(state, agent):
-    state.cash[agent] = state.cash[agent] + 1.0
+    state.time += 1
+    state.cash[agent] += 1.0
     return state
 
 
