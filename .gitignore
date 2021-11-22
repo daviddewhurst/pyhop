@@ -1,2 +1,8 @@
 build
 *.py[co]
+*.egg
+*.log
+__pycache__
+__pycache__/*
+*.egg_info
+*.egg_info/*
